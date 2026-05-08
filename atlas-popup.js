@@ -7,7 +7,8 @@
   'use strict';
 
   var SESSION_KEY = 'atlas_emma_popup_dismissed';
-  var DELAY_MS = 30000;
+  var DELAY_MS = 12000;
+  var WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/eDv3Z93FnteTxZgpWqNe/webhook-trigger/73bd0ca0-c1c6-48c5-a42a-7353e1208531';
 
   function whenReady(fn) {
     if (document.readyState === 'loading') {
@@ -165,12 +166,36 @@
       submitBtn.disabled = true;
       if (btnLabel) btnLabel.textContent = 'Connecting...';
 
-      // === HOOK: send data to your endpoint here when ready ===
-      // fetch('YOUR_WEBHOOK_URL', {
-      //   method: 'POST',
-      //   headers: {'Content-Type': 'application/json'},
-      //   body: JSON.stringify({ firstName: name, email: email, phone: phone, mode: currentMode })
-      // });
+      // Build payload for GHL inbound webhook
+      var payload = {
+        firstName: name,
+        email: email,
+        phone: phone.replace(/[^\d+]/g, '').replace(/^(\d)/, '+1$1'),
+        clone_type: currentMode,
+        tags: [currentMode === 'voice' ? 'voice-clone-test' : 'imessage-clone-test'],
+        source: 'Atlas Popup - Test Drive Emma',
+        submitted_at: new Date().toISOString()
+      };
+
+      // Ensure phone starts with + for E.164 format
+      if (payload.phone.charAt(0) !== '+') {
+        payload.phone = '+' + payload.phone;
+      }
+
+      // Send to GHL — fire and continue (don't block UX on webhook response)
+      try {
+        fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          mode: 'cors',
+          keepalive: true
+        }).catch(function(err) {
+          console.warn('Atlas popup webhook error:', err);
+        });
+      } catch (e) {
+        console.warn('Atlas popup webhook exception:', e);
+      }
 
       setTimeout(function() {
         showSuccess(name, currentMode);
