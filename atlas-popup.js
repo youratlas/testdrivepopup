@@ -250,24 +250,78 @@
       }, DELAY_MS);
     }
 
-    // Click trigger: any element linking to #atlas-open-popup opens it instantly,
-    // even if previously dismissed this session
+    // ============================================================
+    // CLICK TRIGGERS — multiple methods to handle Framer's wrappers
+    // ============================================================
+
+    // METHOD 1: Expose a global function. Bulletproof.
+    // Framer users can attach this to any button via the "Click" interaction
+    // pointing to "javascript:window.atlasOpenPopup()" or by using a code override.
+    window.atlasOpenPopup = function() {
+      showPopup();
+    };
+
+    // METHOD 2: Capture-phase click listener so we run BEFORE Framer's own handlers
+    // can preventDefault or stop propagation.
     document.addEventListener('click', function(e) {
       var target = e.target;
-      // Walk up the DOM tree in case the click hit an inner element of the CTA
-      while (target && target !== document.body) {
-        if (target.tagName === 'A' && target.getAttribute('href') === '#atlas-open-popup') {
-          e.preventDefault();
-          showPopup();
-          return;
+      var depth = 0;
+      var maxDepth = 10; // safety cap on DOM walking
+
+      while (target && target !== document.body && depth < maxDepth) {
+        depth++;
+
+        // 2a. Anchor links pointing to #atlas-open-popup
+        if (target.tagName === 'A') {
+          var href = target.getAttribute('href') || '';
+          if (href === '#atlas-open-popup' || href.indexOf('#atlas-open-popup') !== -1) {
+            e.preventDefault();
+            e.stopPropagation();
+            showPopup();
+            return;
+          }
         }
-        if (target.getAttribute && target.getAttribute('data-atlas-trigger') === 'open-popup') {
-          e.preventDefault();
-          showPopup();
-          return;
+
+        // 2b. Any element with data-atlas-trigger="open-popup"
+        if (target.getAttribute) {
+          var trigger = target.getAttribute('data-atlas-trigger');
+          if (trigger === 'open-popup') {
+            e.preventDefault();
+            e.stopPropagation();
+            showPopup();
+            return;
+          }
         }
+
+        // 2c. Framer often wraps buttons. Check if any ancestor has a child
+        // that contains the atlas-open-popup link or attribute.
+        if (target.querySelector) {
+          var nestedLink = target.querySelector('a[href*="atlas-open-popup"], [data-atlas-trigger="open-popup"]');
+          if (nestedLink && target.contains(nestedLink)) {
+            e.preventDefault();
+            e.stopPropagation();
+            showPopup();
+            return;
+          }
+        }
+
         target = target.parentNode;
       }
-    });
+    }, true); // <-- true = capture phase, runs before bubble-phase listeners
+
+    // METHOD 3: Hash-based trigger. If URL hash changes to #atlas-open-popup, open it.
+    // This catches Framer's case where it navigates the URL on click.
+    function checkHash() {
+      if (window.location.hash === '#atlas-open-popup') {
+        showPopup();
+        // Clean the hash so back button doesn't re-trigger awkwardly
+        if (history.replaceState) {
+          history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+      }
+    }
+    window.addEventListener('hashchange', checkHash);
+    // Also check on initial load in case someone hits the page with the hash already there
+    checkHash();
   });
 })();
