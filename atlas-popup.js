@@ -20,11 +20,12 @@
 
   whenReady(function() {
 
-    try {
-      if (sessionStorage.getItem(SESSION_KEY) === '1') return;
-    } catch (e) {}
-
     if (document.getElementById('atlas-emma-popup')) return;
+
+    var dismissedThisSession = false;
+    try {
+      dismissedThisSession = sessionStorage.getItem(SESSION_KEY) === '1';
+    } catch (e) {}
 
     var html = ''
       + '<div id="atlas-emma-popup" role="dialog" aria-modal="true">'
@@ -100,12 +101,24 @@
     var popupShown = false;
 
     function showPopup() {
-      if (popupShown) return;
-      popupShown = true;
+      // If already visible, do nothing
+      if (popup.classList.contains('atlas-emma-active')) return;
+
+      // Reset to form state in case it was previously submitted
+      if (formState) formState.style.display = '';
+      if (successState) successState.classList.remove('atlas-emma-show');
+
+      // Re-enable submit button in case it was disabled
+      if (submitBtn) submitBtn.disabled = false;
+      if (btnLabel) {
+        btnLabel.textContent = currentMode === 'voice' ? 'Get a live call now' : 'Send me an iMessage';
+      }
+
       popup.style.display = 'flex';
       void popup.offsetWidth;
       popup.classList.add('atlas-emma-active');
       document.body.style.overflow = 'hidden';
+      popupShown = true;
     }
 
     function hidePopup() {
@@ -230,6 +243,31 @@
 
     submitBtn.addEventListener('click', handleSubmit);
 
-    setTimeout(showPopup, DELAY_MS);
+    // Auto-trigger: only fire 12s timer if not previously dismissed this session
+    if (!dismissedThisSession) {
+      setTimeout(function() {
+        if (!popupShown) showPopup();
+      }, DELAY_MS);
+    }
+
+    // Click trigger: any element linking to #atlas-open-popup opens it instantly,
+    // even if previously dismissed this session
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      // Walk up the DOM tree in case the click hit an inner element of the CTA
+      while (target && target !== document.body) {
+        if (target.tagName === 'A' && target.getAttribute('href') === '#atlas-open-popup') {
+          e.preventDefault();
+          showPopup();
+          return;
+        }
+        if (target.getAttribute && target.getAttribute('data-atlas-trigger') === 'open-popup') {
+          e.preventDefault();
+          showPopup();
+          return;
+        }
+        target = target.parentNode;
+      }
+    });
   });
 })();
