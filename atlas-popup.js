@@ -1,556 +1,354 @@
 /* ============================================================
    ATLAS REVENUE ENGINE — Test Drive Emma Popup
-   v4 — Final styles
+   v4 — Final behavior
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,400;1,500;1,600&display=swap');
+(function() {
+  'use strict';
 
-#atlas-emma-popup,
-#atlas-emma-popup *,
-#atlas-emma-popup *::before,
-#atlas-emma-popup *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+  var SESSION_KEY = 'atlas_emma_popup_dismissed';
+  var DELAY_MS = 12000;
+  var WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/eDv3Z93FnteTxZgpWqNe/webhook-trigger/73bd0ca0-c1c6-48c5-a42a-7353e1208531';
 
-#atlas-emma-popup {
-  position: fixed;
-  inset: 0;
-  z-index: 2147483647;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: rgba(8, 0, 16, 0.78);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
-  opacity: 0;
-  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overscroll-behavior: contain;
-}
-
-#atlas-emma-popup.atlas-emma-active {
-  display: flex;
-  opacity: 1;
-}
-
-#atlas-emma-popup .atlas-emma-modal {
-  position: relative;
-  width: 100%;
-  max-width: 500px;
-  max-height: 92vh;
-  overflow: hidden auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  border-radius: 24px;
-  background:
-    radial-gradient(ellipse 130% 70% at 50% 110%, rgba(245, 220, 255, 0.85) 0%, rgba(232, 180, 255, 0.6) 12%, transparent 35%),
-    radial-gradient(ellipse 110% 60% at 50% 75%, rgba(217, 70, 239, 0.7) 0%, rgba(192, 38, 211, 0.55) 25%, transparent 55%),
-    radial-gradient(ellipse 100% 50% at 50% 55%, rgba(168, 85, 247, 0.6) 0%, transparent 60%),
-    linear-gradient(180deg, #000000 0%, #0a0014 25%, #1a0033 50%, #2d0852 75%, #3d1170 100%);
-  border: 1px solid rgba(217, 70, 239, 0.35);
-  padding: 36px 32px 28px;
-  color: #fff;
-  box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.7),
-    0 0 100px rgba(217, 70, 239, 0.25);
-  transform: translateY(20px) scale(0.96);
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-#atlas-emma-popup.atlas-emma-active .atlas-emma-modal {
-  transform: translateY(0) scale(1);
-}
-
-#atlas-emma-popup .atlas-emma-modal::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: repeating-linear-gradient(90deg,
-    transparent 0px, transparent 8px,
-    rgba(255, 255, 255, 0.05) 8px, rgba(255, 255, 255, 0.05) 9px,
-    transparent 9px, transparent 14px,
-    rgba(255, 255, 255, 0.07) 14px, rgba(255, 255, 255, 0.07) 15px,
-    transparent 15px, transparent 22px);
-  opacity: 0.5;
-  pointer-events: none;
-  -webkit-mask-image: radial-gradient(ellipse at center top, black 15%, transparent 60%);
-  mask-image: radial-gradient(ellipse at center top, black 15%, transparent 60%);
-}
-
-#atlas-emma-popup .atlas-emma-modal > * {
-  position: relative;
-  z-index: 1;
-}
-
-#atlas-emma-popup .atlas-emma-modal::-webkit-scrollbar { width: 6px; }
-#atlas-emma-popup .atlas-emma-modal::-webkit-scrollbar-track { background: transparent; }
-#atlas-emma-popup .atlas-emma-modal::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 3px; }
-
-#atlas-emma-popup .atlas-emma-close {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  z-index: 10;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-#atlas-emma-popup .atlas-emma-close:hover {
-  background: rgba(255, 255, 255, 0.22);
-  transform: rotate(90deg);
-}
-#atlas-emma-popup .atlas-emma-close svg { width: 12px; height: 12px; }
-
-#atlas-emma-popup .atlas-emma-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 100px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #fff;
-  margin-bottom: 14px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-#atlas-emma-popup .atlas-emma-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
-  animation: atlasEmmaPulse 1.8s ease-in-out infinite;
-}
-
-@keyframes atlasEmmaPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.3); }
-}
-
-#atlas-emma-popup .atlas-emma-headline {
-  font-size: 25px;
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  color: #fff;
-  margin: 0 0 4px;
-}
-
-#atlas-emma-popup .atlas-emma-italic {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-style: italic;
-  font-weight: 500;
-  font-size: 26px;
-  color: #fff;
-  display: block;
-  margin-top: 2px;
-}
-
-#atlas-emma-popup .atlas-emma-subhead {
-  font-size: 13px;
-  line-height: 1.5;
-  color: #fff;
-  margin: 10px 0 18px;
-  font-weight: 400;
-  opacity: 0.9;
-}
-
-#atlas-emma-popup .atlas-emma-toggle {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 3px 16px;
-  gap: 14px;
-  width: 100%;
-  max-width: 340px;
-  height: 48px;
-  margin: 0 auto 18px;
-  background: radial-gradient(39.61% 100% at 50% 0%, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 100px;
-  position: relative;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.4),
-    0 8px 24px rgba(0, 0, 0, 0.25);
-}
-
-#atlas-emma-popup .atlas-emma-tside {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
-  transition: opacity 0.3s;
-  user-select: none;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-}
-
-#atlas-emma-popup .atlas-emma-ticon {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-#atlas-emma-popup .atlas-emma-ticon svg {
-  width: 11px;
-  height: 11px;
-  color: #fff;
-}
-#atlas-emma-popup .atlas-emma-tside.atlas-emma-inactive {
-  opacity: 0.5;
-}
-
-#atlas-emma-popup .atlas-emma-ttrack {
-  flex-shrink: 0;
-  width: 48px;
-  height: 26px;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 100px;
-  position: relative;
-  cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-#atlas-emma-popup .atlas-emma-tthumb {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 20px;
-  height: 20px;
-  background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
-  border-radius: 50%;
-  box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.4),
-    inset 0 1px 1px rgba(255, 255, 255, 0.7);
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-#atlas-emma-popup .atlas-emma-toggle[data-mode="imessage"] .atlas-emma-tthumb {
-  transform: translateX(22px);
-}
-
-#atlas-emma-popup .atlas-emma-field {
-  margin-bottom: 10px;
-}
-
-#atlas-emma-popup .atlas-emma-label {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: #fff;
-  margin-bottom: 5px;
-  text-transform: uppercase;
-}
-
-#atlas-emma-popup .atlas-emma-input {
-  width: 100%;
-  padding: 11px 14px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  color: #fff;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  outline: none;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-#atlas-emma-popup .atlas-emma-input::placeholder {
-  color: rgba(255, 255, 255, 0.55);
-  font-weight: 400;
-}
-
-#atlas-emma-popup .atlas-emma-input:focus {
-  border-color: rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 0 4px rgba(217, 70, 239, 0.25);
-}
-
-#atlas-emma-popup .atlas-emma-phone-wrap {
-  display: flex;
-  gap: 8px;
-}
-
-#atlas-emma-popup .atlas-emma-country {
-  flex-shrink: 0;
-  padding: 11px 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 500;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-#atlas-emma-popup .atlas-emma-submit {
-  width: 100%;
-  padding: 14px 22px;
-  margin-top: 6px;
-  background: #fff;
-  border: none;
-  border-radius: 100px;
-  color: #1a0033;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.4),
-    0 0 40px rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-#atlas-emma-popup .atlas-emma-submit::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(217, 70, 239, 0.3), transparent);
-  transition: left 0.6s ease;
-}
-
-#atlas-emma-popup .atlas-emma-submit:hover::before {
-  left: 100%;
-}
-
-#atlas-emma-popup .atlas-emma-submit:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 14px 40px rgba(0, 0, 0, 0.5),
-    0 0 50px rgba(255, 255, 255, 0.3);
-}
-
-#atlas-emma-popup .atlas-emma-submit:active {
-  transform: translateY(0);
-}
-
-#atlas-emma-popup .atlas-emma-submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-#atlas-emma-popup .atlas-emma-submit svg {
-  width: 16px;
-  height: 16px;
-}
-
-#atlas-emma-popup .atlas-emma-trust {
-  margin-top: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-
-#atlas-emma-popup .atlas-emma-trust-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 10px;
-  font-weight: 500;
-  color: #fff;
-  opacity: 0.8;
-}
-
-#atlas-emma-popup .atlas-emma-trust-item svg {
-  width: 11px;
-  height: 11px;
-  color: #fff;
-}
-
-#atlas-emma-popup .atlas-emma-note {
-  margin-top: 10px;
-  padding: 9px 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border-left: 2px solid #fff;
-  border-radius: 6px;
-  font-size: 11px;
-  line-height: 1.45;
-  color: #fff;
-  opacity: 0.9;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-#atlas-emma-popup .atlas-emma-note strong {
-  color: #fff;
-  font-weight: 700;
-  opacity: 1;
-}
-
-#atlas-emma-popup .atlas-emma-success {
-  display: none;
-  text-align: center;
-  padding: 20px 0 10px;
-}
-
-#atlas-emma-popup .atlas-emma-success.atlas-emma-show {
-  display: block;
-  animation: atlasEmmaFadeIn 0.5s ease;
-}
-
-@keyframes atlasEmmaFadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-#atlas-emma-popup .atlas-emma-icon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 24px;
-  border-radius: 50%;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 60px rgba(255, 255, 255, 0.5);
-  position: relative;
-}
-
-#atlas-emma-popup .atlas-emma-icon::before {
-  content: '';
-  position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  animation: atlasEmmaRing 2s ease-out infinite;
-}
-
-@keyframes atlasEmmaRing {
-  0% { transform: scale(0.95); opacity: 0.8; }
-  100% { transform: scale(1.4); opacity: 0; }
-}
-
-#atlas-emma-popup .atlas-emma-icon svg {
-  width: 36px;
-  height: 36px;
-  color: #1a0033;
-}
-
-#atlas-emma-popup .atlas-emma-stitle {
-  font-size: 24px;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 8px;
-  letter-spacing: -0.02em;
-}
-
-#atlas-emma-popup .atlas-emma-sitalic {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-style: italic;
-  font-weight: 500;
-  font-size: 26px;
-  color: #fff;
-  display: block;
-  margin-bottom: 18px;
-}
-
-#atlas-emma-popup .atlas-emma-stext {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #fff;
-  max-width: 380px;
-  margin: 0 auto 24px;
-  opacity: 0.9;
-}
-
-#atlas-emma-popup .atlas-emma-stext strong {
-  color: #fff;
-  font-weight: 700;
-  opacity: 1;
-}
-
-@media (max-width: 540px) {
-  #atlas-emma-popup {
-    padding: 12px;
+  function whenReady(fn) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', fn);
+    } else {
+      fn();
+    }
   }
-  #atlas-emma-popup .atlas-emma-modal {
-    padding: 30px 20px 22px;
-  }
-  #atlas-emma-popup .atlas-emma-headline {
-    font-size: 21px;
-  }
-  #atlas-emma-popup .atlas-emma-italic {
-    font-size: 22px;
-  }
-  #atlas-emma-popup .atlas-emma-toggle {
-    gap: 10px;
-    padding: 3px 12px;
-    height: 44px;
-  }
-  #atlas-emma-popup .atlas-emma-tside {
-    font-size: 11px;
-  }
-  #atlas-emma-popup .atlas-emma-subhead {
-    font-size: 12px;
-    margin: 8px 0 14px;
-  }
-  #atlas-emma-popup .atlas-emma-input {
-    padding: 10px 13px;
-    font-size: 13px;
-  }
-  #atlas-emma-popup .atlas-emma-submit {
-    padding: 13px 20px;
-    font-size: 13px;
-  }
-  #atlas-emma-popup .atlas-emma-trust-item {
-    font-size: 9px;
-  }
-  #atlas-emma-popup .atlas-emma-note {
-    font-size: 10px;
-    padding: 8px 10px;
-  }
-}
+
+  whenReady(function() {
+
+    if (document.getElementById('atlas-emma-popup')) return;
+
+    var dismissedThisSession = false;
+    try {
+      dismissedThisSession = sessionStorage.getItem(SESSION_KEY) === '1';
+    } catch (e) {}
+
+    var html = ''
+      + '<div id="atlas-emma-popup" role="dialog" aria-modal="true">'
+      +   '<div class="atlas-emma-modal">'
+      +     '<button class="atlas-emma-close" data-atlas-action="close" aria-label="Close">'
+      +       '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1L13 13M13 1L1 13"/></svg>'
+      +     '</button>'
+      +     '<div class="atlas-emma-form-state">'
+      +       '<h2 class="atlas-emma-headline">Clone Your Best Human</h2>'
+      +       '<p class="atlas-emma-subhead">Pick how you want to test Emma</p>'
+      +       '<div class="atlas-emma-eyebrow-wrap"><div class="atlas-emma-eyebrow"><span class="atlas-emma-dot"></span>Live Test Drive</div></div>'
+      +       '<div class="atlas-emma-toggle" data-mode="voice">'
+      +         '<div class="atlas-emma-tside" data-side="voice">'
+      +           '<div class="atlas-emma-ticon">'
+      +             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+      +               '<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>'
+      +               '<line x1="8" y1="9" x2="8" y2="15"/><line x1="12" y1="7" x2="12" y2="17"/><line x1="16" y1="9" x2="16" y2="15"/>'
+      +             '</svg>'
+      +           '</div>'
+      +           'Voice Clone'
+      +         '</div>'
+      +         '<div class="atlas-emma-ttrack" data-atlas-action="toggleTrack"><div class="atlas-emma-tthumb"></div></div>'
+      +         '<div class="atlas-emma-tside atlas-emma-inactive" data-side="imessage">'
+      +           '<div class="atlas-emma-ticon">'
+      +             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+      +               '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>'
+      +               '<text x="12" y="14" text-anchor="middle" font-size="7" font-weight="700" fill="currentColor" stroke="none" font-family="Montserrat, sans-serif">AI</text>'
+      +             '</svg>'
+      +           '</div>'
+      +           'iMessage Clone'
+      +         '</div>'
+      +       '</div>'
+      +       '<div class="atlas-emma-field"><label class="atlas-emma-label">First Name</label><input type="text" class="atlas-emma-input" data-atlas-field="firstName" placeholder="Your first name" required></div>'
+      +       '<div class="atlas-emma-field"><label class="atlas-emma-label">Email</label><input type="email" class="atlas-emma-input" data-atlas-field="email" placeholder="your@email.com" required></div>'
+      +       '<div class="atlas-emma-field"><label class="atlas-emma-label">Phone</label><div class="atlas-emma-phone-wrap"><div class="atlas-emma-country">\uD83C\uDDFA\uD83C\uDDF8 +1</div><input type="tel" class="atlas-emma-input" data-atlas-field="phone" placeholder="(555) 123-4567" required></div></div>'
+      +       '<button type="button" class="atlas-emma-submit" data-atlas-action="submit">'
+      +         '<span class="atlas-emma-btn-label">Test the clone right now</span>'
+      +         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>'
+      +       '</button>'
+      +       '<div class="atlas-emma-trust">'
+      +         '<div class="atlas-emma-trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Under 60 seconds</div>'
+      +         '<div class="atlas-emma-trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>No commitment</div>'
+      +         '<div class="atlas-emma-trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>100% live AI</div>'
+      +       '</div>'
+      +     '</div>'
+      +     '<div class="atlas-emma-success">'
+      +       '<div class="atlas-emma-icon"><svg class="atlas-emma-sicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>'
+      +       '<h3 class="atlas-emma-stitle">You\'re in, <span class="atlas-emma-sname">friend</span>.</h3>'
+      +       '<span class="atlas-emma-sitalic">Emma\'s calling you now.</span>'
+      +       '<p class="atlas-emma-stext">Your phone will ring in <strong>under 60 seconds</strong>. Pick up. Emma sounds exactly like a real human. Ask her anything, push her, try to break her. She\'ll handle it.</p>'
+      +     '</div>'
+      +   '</div>'
+      + '</div>';
+
+    var container = document.createElement('div');
+    container.innerHTML = html;
+    document.body.appendChild(container.firstChild);
+
+    var popup = document.getElementById('atlas-emma-popup');
+    if (!popup) return;
+
+    var formState = popup.querySelector('.atlas-emma-form-state');
+    var successState = popup.querySelector('.atlas-emma-success');
+    var toggle = popup.querySelector('.atlas-emma-toggle');
+    var sides = popup.querySelectorAll('.atlas-emma-tside');
+    var track = popup.querySelector('[data-atlas-action="toggleTrack"]');
+    var btnLabel = popup.querySelector('.atlas-emma-btn-label');
+    var submitBtn = popup.querySelector('[data-atlas-action="submit"]');
+    var closeBtn = popup.querySelector('[data-atlas-action="close"]');
+
+    var currentMode = 'voice';
+    var popupShown = false;
+
+    // Track scroll position for proper lock/unlock
+    var savedScrollY = 0;
+
+    function lockScroll() {
+      savedScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+      // Lock by fixing the body in place. This is the only method that reliably
+      // works on iOS Safari, Framer wrappers, and all modern browsers.
+      document.body.style.position = 'fixed';
+      document.body.style.top = '-' + savedScrollY + 'px';
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    }
+
+    function unlockScroll() {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      // Restore scroll position
+      window.scrollTo(0, savedScrollY);
+    }
+
+    function showPopup() {
+      // If already visible, do nothing
+      if (popup.classList.contains('atlas-emma-active')) return;
+
+      // Reset to form state in case it was previously submitted
+      if (formState) formState.style.display = '';
+      if (successState) successState.classList.remove('atlas-emma-show');
+
+      // Re-enable submit button in case it was disabled
+      if (submitBtn) submitBtn.disabled = false;
+      if (btnLabel) {
+        btnLabel.textContent = currentMode === 'voice' ? 'Get a live call now' : 'Send me an iMessage';
+      }
+
+      popup.style.display = 'flex';
+      void popup.offsetWidth;
+      popup.classList.add('atlas-emma-active');
+      lockScroll();
+      popupShown = true;
+    }
+
+    function hidePopup() {
+      popup.classList.remove('atlas-emma-active');
+      unlockScroll();
+      try { sessionStorage.setItem(SESSION_KEY, '1'); } catch (e) {}
+      setTimeout(function() {
+        popup.style.display = 'none';
+      }, 400);
+    }
+
+    function switchMode(mode) {
+      currentMode = mode;
+      toggle.setAttribute('data-mode', mode);
+      for (var i = 0; i < sides.length; i++) {
+        if (sides[i].getAttribute('data-side') === mode) {
+          sides[i].classList.remove('atlas-emma-inactive');
+        } else {
+          sides[i].classList.add('atlas-emma-inactive');
+        }
+      }
+      if (btnLabel) {
+        btnLabel.textContent = mode === 'voice' ? 'Get a live call now' : 'Send me an iMessage';
+      }
+    }
+
+    function showSuccess(name, mode) {
+      var sname = popup.querySelector('.atlas-emma-sname');
+      var sitalic = popup.querySelector('.atlas-emma-sitalic');
+      var stext = popup.querySelector('.atlas-emma-stext');
+      var sicon = popup.querySelector('.atlas-emma-sicon');
+
+      if (sname) sname.textContent = name;
+
+      if (mode === 'voice') {
+        if (sitalic) sitalic.textContent = "Emma's calling you now.";
+        if (stext) stext.innerHTML = 'Your phone will ring in <strong>under 60 seconds</strong>. Pick up. Emma sounds exactly like a real human. Ask her anything, push her, try to break her. She\'ll handle it.';
+        if (sicon) sicon.innerHTML = '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>';
+      } else {
+        if (sitalic) sitalic.textContent = "Emma's texting you now.";
+        if (stext) stext.innerHTML = 'Check your messages in <strong>under 60 seconds</strong>. A real iMessage. Blue bubble, not green. Reply naturally. She handles objections, answers questions, and books the appointment.';
+        if (sicon) sicon.innerHTML = '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>';
+      }
+
+      if (formState) formState.style.display = 'none';
+      if (successState) successState.classList.add('atlas-emma-show');
+
+      setTimeout(hidePopup, 8000);
+    }
+
+    function handleSubmit() {
+      var name = popup.querySelector('[data-atlas-field="firstName"]').value.trim();
+      var email = popup.querySelector('[data-atlas-field="email"]').value.trim();
+      var phone = popup.querySelector('[data-atlas-field="phone"]').value.trim();
+
+      if (!name || !email || !phone) return;
+
+      submitBtn.disabled = true;
+      if (btnLabel) btnLabel.textContent = 'Connecting...';
+
+      // Build payload for GHL inbound webhook
+      var payload = {
+        firstName: name,
+        email: email,
+        phone: phone.replace(/[^\d+]/g, '').replace(/^(\d)/, '+1$1'),
+        clone_type: currentMode,
+        tags: [currentMode === 'voice' ? 'voice-clone-test' : 'imessage-clone-test'],
+        source: 'Atlas Popup - Test Drive Emma',
+        submitted_at: new Date().toISOString()
+      };
+
+      // Ensure phone starts with + for E.164 format
+      if (payload.phone.charAt(0) !== '+') {
+        payload.phone = '+' + payload.phone;
+      }
+
+      // Send to GHL — fire and continue (don't block UX on webhook response)
+      try {
+        fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          mode: 'cors',
+          keepalive: true
+        }).catch(function(err) {
+          console.warn('Atlas popup webhook error:', err);
+        });
+      } catch (e) {
+        console.warn('Atlas popup webhook exception:', e);
+      }
+
+      setTimeout(function() {
+        showSuccess(name, currentMode);
+      }, 700);
+    }
+
+    closeBtn.addEventListener('click', hidePopup);
+
+    popup.addEventListener('click', function(e) {
+      if (e.target === popup) hidePopup();
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && popup.classList.contains('atlas-emma-active')) {
+        hidePopup();
+      }
+    });
+
+    for (var i = 0; i < sides.length; i++) {
+      (function(side) {
+        side.addEventListener('click', function() {
+          switchMode(side.getAttribute('data-side'));
+        });
+      })(sides[i]);
+    }
+
+    if (track) {
+      track.addEventListener('click', function() {
+        switchMode(currentMode === 'voice' ? 'imessage' : 'voice');
+      });
+    }
+
+    submitBtn.addEventListener('click', handleSubmit);
+
+    // Auto-trigger: only fire 12s timer if not previously dismissed this session
+    if (!dismissedThisSession) {
+      setTimeout(function() {
+        if (!popupShown) showPopup();
+      }, DELAY_MS);
+    }
+
+    // ============================================================
+    // CLICK TRIGGERS — multiple methods to handle Framer's wrappers
+    // ============================================================
+
+    // METHOD 1: Expose a global function. Bulletproof.
+    // Framer users can attach this to any button via the "Click" interaction
+    // pointing to "javascript:window.atlasOpenPopup()" or by using a code override.
+    window.atlasOpenPopup = function() {
+      showPopup();
+    };
+
+    // METHOD 2: Capture-phase click listener so we run BEFORE Framer's own handlers
+    // can preventDefault or stop propagation.
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      var depth = 0;
+      var maxDepth = 10; // safety cap on DOM walking
+
+      while (target && target !== document.body && depth < maxDepth) {
+        depth++;
+
+        // 2a. Anchor links pointing to #atlas-open-popup
+        if (target.tagName === 'A') {
+          var href = target.getAttribute('href') || '';
+          if (href === '#atlas-open-popup' || href.indexOf('#atlas-open-popup') !== -1) {
+            e.preventDefault();
+            e.stopPropagation();
+            showPopup();
+            return;
+          }
+        }
+
+        // 2b. Any element with data-atlas-trigger="open-popup"
+        if (target.getAttribute) {
+          var trigger = target.getAttribute('data-atlas-trigger');
+          if (trigger === 'open-popup') {
+            e.preventDefault();
+            e.stopPropagation();
+            showPopup();
+            return;
+          }
+        }
+
+        // 2c. Framer often wraps buttons. Check if any ancestor has a child
+        // that contains the atlas-open-popup link or attribute.
+        if (target.querySelector) {
+          var nestedLink = target.querySelector('a[href*="atlas-open-popup"], [data-atlas-trigger="open-popup"]');
+          if (nestedLink && target.contains(nestedLink)) {
+            e.preventDefault();
+            e.stopPropagation();
+            showPopup();
+            return;
+          }
+        }
+
+        target = target.parentNode;
+      }
+    }, true); // <-- true = capture phase, runs before bubble-phase listeners
+
+    // METHOD 3: Hash-based trigger. If URL hash changes to #atlas-open-popup, open it.
+    // This catches Framer's case where it navigates the URL on click.
+    function checkHash() {
+      if (window.location.hash === '#atlas-open-popup') {
+        showPopup();
+        // Clean the hash so back button doesn't re-trigger awkwardly
+        if (history.replaceState) {
+          history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+      }
+    }
+    window.addEventListener('hashchange', checkHash);
+    // Also check on initial load in case someone hits the page with the hash already there
+    checkHash();
+  });
+})();
