@@ -193,6 +193,15 @@
       if (formState) formState.style.display = 'none';
       if (successState) successState.classList.add('atlas-emma-show');
 
+      // Fire Google Tag Manager conversion event when "You're In" screen appears
+      try {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          'event': 'lead_optin_completed',
+          'form_type': mode === 'voice' ? 'voice_clone_popup' : 'imessage_clone_popup'
+        });
+      } catch (e) {}
+
       setTimeout(hidePopup, 8000);
     }
 
