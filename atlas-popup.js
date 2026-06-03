@@ -232,6 +232,23 @@
         payload.phone = '+' + payload.phone;
       }
 
+      // Append UTM tracking data from the global getAtlasUTMs() function.
+      // Defined elsewhere on the site (Framer <head>). Safe-guarded so the popup
+      // still works if the function isn't loaded for any reason.
+      try {
+        if (typeof window.getAtlasUTMs === 'function') {
+          var utmData = window.getAtlasUTMs() || {};
+          payload.utm_source   = utmData.utm_source   || '';
+          payload.utm_medium   = utmData.utm_medium   || '';
+          payload.utm_campaign = utmData.utm_campaign || '';
+          payload.utm_term     = utmData.utm_term     || '';
+          payload.utm_content  = utmData.utm_content  || '';
+          payload.gclid        = utmData.gclid        || '';
+        }
+      } catch (e) {
+        console.warn('Atlas popup UTM capture skipped:', e);
+      }
+
       // Send to GHL — fire and continue (don't block UX on webhook response)
       try {
         fetch(WEBHOOK_URL, {
