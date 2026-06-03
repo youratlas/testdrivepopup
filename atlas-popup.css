@@ -409,6 +409,15 @@
   color: #fff;
 }
 
+#atlas-emma-popup .atlas-emma-availability {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 500;
+  color: #fff;
+  opacity: 0.8;
+}
+
 #atlas-emma-popup .atlas-emma-note {
   margin-top: 10px;
   padding: 9px 12px;
