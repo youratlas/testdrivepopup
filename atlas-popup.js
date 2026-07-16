@@ -9,6 +9,8 @@
   var SESSION_KEY = 'atlas_emma_popup_dismissed';
   var DELAY_MS = 12000;
   var WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/eDv3Z93FnteTxZgpWqNe/webhook-trigger/73bd0ca0-c1c6-48c5-a42a-7353e1208531';
+   var IMESSAGE_PHONE = '+19298393041';
+     var IMESSAGE_BODY = "Hey! I'd love to see Atlas in action";
 
   function whenReady(fn) {
     if (document.readyState === 'loading') {
@@ -263,6 +265,12 @@
       } catch (e) {
         console.warn('Atlas popup webhook exception:', e);
       }
+
+       // If iMessage mode, redirect to the sms: deep link so the visitor's phone
+       // opens Messages with the pre-filled text (mirrors blue.youratlas.com).
+       if (currentMode === 'imessage') {
+            window.location.href = 'sms:' + IMESSAGE_PHONE + '&body=' + encodeURIComponent(IMESSAGE_BODY);
+       }
 
       setTimeout(function() {
         showSuccess(name, currentMode);
